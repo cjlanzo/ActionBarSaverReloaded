@@ -1,1 +1,1 @@
-ADDON_NAME = "RaidNotesTBC"
+ADDON_NAME = "ActionBarSaverReloaded"

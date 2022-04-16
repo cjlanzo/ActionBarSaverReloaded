@@ -1,11 +1,9 @@
 ## Interface: 20504
-## Title: new-addon
+## Title: ActionBarSaverReloaded
 ## Version: 1.0.0
 ## Notes: 
 ## Author: Voodoomoose
-## SavedVariables: new-addon
-
-Embeds.xml
+## SavedVariables: ActionBarSaverReloaded
 
 Constants.lua
-new-addon.lua
+ActionBarSaverReloaded.lua
