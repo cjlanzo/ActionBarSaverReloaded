@@ -1,0 +1,11 @@
+## Interface: 20504
+## Title: new-addon
+## Version: 1.0.0
+## Notes: 
+## Author: Voodoomoose
+## SavedVariables: new-addon
+
+Embeds.xml
+
+Constants.lua
+new-addon.lua
