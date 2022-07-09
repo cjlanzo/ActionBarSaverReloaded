@@ -1,1 +1,4 @@
-ADDON_NAME = "ActionBarSaverReloaded"
+ADDON_NAME = "ActionBarSaverReloadedNew"
+MAX_MACROS = 138
+MAX_CHAR_MACROS = 18
+MAX_GLOBAL_MACROS = 120

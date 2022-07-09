@@ -1,0 +1,10 @@
+{
+    "Lua.diagnostics.globals": [
+        "dict",
+        "actions",
+        "commands"
+    ],
+    "Lua.diagnostics.disable": [
+        "undefined-global"
+    ]
+}

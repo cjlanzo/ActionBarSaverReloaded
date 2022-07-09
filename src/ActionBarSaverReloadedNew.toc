@@ -1,0 +1,15 @@
+## Interface: 20504
+## Title: ActionBarSaverReloadedNew
+## Version: 1.0.0
+## Notes: Manage, save, and restore action bar profiles
+## Author: Voodoomoose
+## SavedVariables: ActionBarSaverReloadedNewDB
+
+Embeds.xml
+
+Constants.lua
+FunctionalHelpers.lua
+Helpers.lua
+Actions.lua
+Commands.lua
+Main.lua
