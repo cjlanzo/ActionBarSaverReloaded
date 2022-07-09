@@ -1,12 +1,12 @@
-dict = {}
+Dict = {}
 
-function dict.iteri(arr, fn)
+function Dict.iteri(arr, fn)
    for _,v in ipairs(arr) do
         fn(v)
    end
 end
 
-function dict.mapi(arr, fn)
+function Dict.mapi(arr, fn)
     local t = {}
 
     for _,v in ipairs(arr) do
@@ -16,13 +16,13 @@ function dict.mapi(arr, fn)
     return t
 end
 
-function dict.iter(t, fn)
+function Dict.iter(t, fn)
     for k,v in pairs(t) do
         fn(k,v)
     end
 end
 
-function dict.map(t, fn)
+function Dict.map(t, fn)
     local nt = {}
 
     for k,v in pairs(t) do

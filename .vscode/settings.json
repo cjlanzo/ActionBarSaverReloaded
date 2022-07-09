@@ -1,9 +1,4 @@
 {
-    "Lua.diagnostics.globals": [
-        "dict",
-        "actions",
-        "commands"
-    ],
     "Lua.workspace.ignoreDir": [
         "/src/Libs/**/*",
     ],

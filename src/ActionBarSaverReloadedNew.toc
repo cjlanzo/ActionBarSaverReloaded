@@ -8,5 +8,6 @@
 Embeds.xml
 
 Constants.lua
+Helpers.lua
 Main.lua
 Actions.lua
