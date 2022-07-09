@@ -2,4 +2,7 @@
     "Lua.workspace.ignoreDir": [
         "/src/Libs/**/*",
     ],
+    "Lua.diagnostics.disable": [
+        "need-check-nil"
+    ],
 }

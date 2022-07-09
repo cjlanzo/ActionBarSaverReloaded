@@ -18,5 +18,5 @@ function ABS:HandleCommands(input)
     local cmd, args = Str.split(input, " ", 2)
     local fn = self.commands[Str.toLower(cmd)]
 
-    if fn then fn(args) else self.actions:PrintUsage() end
+    if fn then fn(self, args) else self.actions.PrintUsage(self) end
 end
