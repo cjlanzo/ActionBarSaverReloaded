@@ -31,3 +31,29 @@ function Dict.map(t, fn)
 
     return nt
 end
+
+function Dict.mapRange(start, stop, fn)
+    local arr = {}
+
+    for i = start, stop do
+        arr[i] = fn(i)
+    end
+
+    return arr
+end
+
+function Dict.iterRange(start, stop, fn)
+    for i = start, stop do
+        fn(i)
+    end
+end
+
+function Dict.keysAsArray(t)
+    local nt = {}
+
+    for k,_ in pairs(t) do
+        table.insert(nt, k)
+    end
+
+    return nt
+end
