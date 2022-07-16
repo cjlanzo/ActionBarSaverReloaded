@@ -6,25 +6,30 @@ local pickupActionButton = {
     macro = PickupMacro
 }
 
-local function RestoreActionButton(index, actionButton)
+local function RestoreActionButton(self, index, actionButton)
     -- Clear the slot
     if GetActionInfo(index) then
         PickupAction(index)
         ClearCursor()
     end
 
-    if not actionButton then return true end
+    if not actionButton then return true, nil end
 
-    pickupActionButton[actionButton.type](actionButton.id)
+    local aliases = self.db.class.spellAliases[actionButton.id] or {}
+    local ids = Array.insert(aliases, actionButton.id, 1)
 
-    if GetCursorInfo() ~= actionButton.type then
+    for _, id in ipairs(ids) do
+        pickupActionButton[actionButton.type](id)
+
+        if GetCursorInfo() == actionButton.type then
+            PlaceAction(index)
+            return true, id
+        end
+
         ClearCursor()
-        return false
     end
 
-    PlaceAction(index)
-
-    return true
+    return false
 end
 
 local function IsMacro(actionButton) return actionButton and actionButton.type == "macro" end
@@ -85,7 +90,7 @@ function Actions:SaveSet(setName)
 
     self.db.class.sets[setName] = set
     self:Print(string.format("Saved set '%s'!", setName))
-    Dict.iteri(warnings, function(warning) self:Print(warning) end)
+    Array.iter(warnings, function(warning) self:Print(warning) end)
 end
 
 function Actions:RestoreSet(setName)
@@ -106,8 +111,7 @@ function Actions:RestoreSet(setName)
     end
 
     local duplicates = GetMacroDuplicates()
-    local errors = {}
-    local warnings = {}
+    local messages = {}
 
     -- Start with an empty cursor
     ClearCursor()
@@ -115,15 +119,18 @@ function Actions:RestoreSet(setName)
     for i = 1, MAX_ACTION_BUTTONS do
         local actionButton = set[i]
 
-        if IsMacro(actionButton) and duplicates[actionButton.id] then AddWarning(warnings, actionButton.id, duplicates[actionButton.id]) end
-        if not RestoreActionButton(i, actionButton) then
-            table.insert(errors, string.format("Error: Unable to restore %s with id %s to slot %d", set[i].type, set[i].id, i))
+        if IsMacro(actionButton) and duplicates[actionButton.id] then AddWarning(messages, actionButton.id, duplicates[actionButton.id]) end
+        
+        local succeeded, restoredID = RestoreActionButton(self, i, actionButton)
+        if not succeeded then
+            table.insert(messages, string.format("Error: Unable to restore %s with id [%s] to slot %d", set[i].type, set[i].id, i))
+        elseif actionButton and restoredID ~= actionButton.id then
+            table.insert(messages, string.format("Info: Restored spell %d (%s) in place of spell %d", restoredID, GetSpellInfo(restoredID), actionButton.id))
         end
     end
 
     self:Print(string.format("Restored set '%s'", setName))
-    Dict.iteri(warnings, function(warning) self:Print(warning) end)
-    Dict.iteri(errors, function(error) self:Print(error) end)
+    Array.iter(messages, function(warning) self:Print(warning) end)
 end
 
 function Actions:DeleteSet(setName)
@@ -150,10 +157,72 @@ function Actions:ListSets()
     self:Print(not Str.nullOrEmpty(setsStr) and setsStr or "No sets found")
 end
 
+function Actions:AliasSpell(args)
+    if Str.nullOrEmpty(args) then
+        self:Print("Must provide args in the format 'spellID aliasID'")
+        return
+    end
+    local spellID, aliasID = string.match(args, "(%d+)%s+(%d+)")
+
+    spellID = tonumber(spellID)
+    aliasID = tonumber(aliasID)
+
+    if not (spellID and aliasID) then
+        self:Print(string.format("Could not parse spellID and aliasID from '%s'", args))
+        return
+    end
+
+    local aliases = self.db.class.spellAliases[spellID] or {}
+    
+    if Array.contains(aliases, aliasID) then
+        self:Print(string.format("Spell %d is already aliased by %d", spellID, aliasID))
+        return
+    end
+
+    table.insert(aliases, aliasID)
+    self.db.class.spellAliases[spellID] = aliases
+
+    self:Print(string.format("Added %d as an alias for %d", aliasID, spellID))
+end
+
+function Actions:DeleteSpellAliases(spellID)
+    if Str.nullOrEmpty(spellID) then
+        self:Print("Must provide a valid spellID")
+        return
+    end
+
+    spellID = tonumber(spellID)
+
+    if not self.db.class.spellAliases[spellID] then
+        self:Print(string.format("No aliases to remove for spell with ID %d", spellID))
+        return
+    end
+
+    self.db.class.spellAliases[spellID] = nil
+
+    self:Print(string.format("Removed all aliases for spell with ID %d", spellID))
+end
+
+function Actions:ListAliases()
+    local aliases = self.db.class.spellAliases
+
+    if Dict.isEmpty(aliases) then
+        self:Print("No aliases found")
+        return
+    end
+
+    Dict.iter(self.db.class.spellAliases, function(spellID, aliases)
+        self:Print(string.format("Spell %d is aliased by: %s", spellID, table.concat(aliases, ", ")))
+    end)
+end
+
 function Actions:PrintUsage()
     self:Print("ABS Slash commands")
-    self:Print("/abs save <set> - Saves your current action bar setup under the given set.")
-    self:Print("/abs restore <set> - Restores the saved set.")
-    self:Print("/abs delete <set> - Deletes the saved set.")
-    self:Print("/abs list - Lists all saved sets.")
+    self:Print("/abs save <set> - Saves your current action bar setup under the given <set>")
+    self:Print("/abs restore <set> - Restores the saved <set>")
+    self:Print("/abs delete <set> - Deletes the saved <set>")
+    self:Print("/abs list - Lists all saved sets")
+    self:Print("/abs alias <spellID> <aliasID> - Adds an alias with <aliasID> to <spellID>")
+    self:Print("/abs unalias <spellID> - Removes all aliases associated with <spellID>")
+    self:Print("/abs aliases - List all spell aliases")
 end

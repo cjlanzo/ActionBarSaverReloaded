@@ -3,7 +3,7 @@ local ABS = _G.LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceConsole-3.0")
 function ABS:OnInitialize()
     self.db = _G.LibStub("AceDB-3.0"):New(ADDON_NAME, {
         class = {
-            spellReplacements = {},
+            spellAliases = {},
             sets = {},
         }
     })
@@ -12,10 +12,13 @@ function ABS:OnInitialize()
         save    = self.actions.SaveSet,
         restore = self.actions.RestoreSet,
         delete  = self.actions.DeleteSet,
-        list    = self.actions.ListSets
+        list    = self.actions.ListSets,
+        alias   = self.actions.AliasSpell,
+        unalias = self.actions.DeleteSpellAliases,
+        aliases = self.actions.ListAliases,
     }
 
-    self:RegisterChatCommand("absn", "HandleCommands")
+    self:RegisterChatCommand("abs", "HandleCommands")
 end
 
 function ABS:HandleCommands(input)
