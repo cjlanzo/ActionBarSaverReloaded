@@ -1,1 +1,3 @@
-ADDON_NAME = "RaidNotesTBC"
+ADDON_NAME = "ActionBarSaverReloaded"
+MAX_MACROS = 138
+MAX_ACTION_BUTTONS = 120
