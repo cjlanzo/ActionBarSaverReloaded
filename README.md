@@ -22,4 +22,4 @@ A new feature has been added for setting up aliases for spells. A common use cas
 
 ## Known Issues
 
-* Aliases should do not work both ways. If you alias `Berserking` as `War Stomp` and then save a set that contains `Berserking`, it will work properly if you restore that set on a tauren. However, if you save a set that contains `War Stomp` and try to restore it on a troll, it will fail. This will be addressed in a future version.
+* Aliases do not work both ways. If you alias `Berserking` as `War Stomp` and then save a set that contains `Berserking`, it will work properly if you restore that set on a tauren. However, if you save a set that contains `War Stomp` and try to restore it on a troll, it will fail. This will be addressed in a future version.
