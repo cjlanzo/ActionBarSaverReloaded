@@ -12,12 +12,12 @@ A new feature has been added for setting up aliases for spells. A common use cas
 
 ## Usage
 
-`/abs save <set>` - Saves your current action bar setup under the given <set>
-`/abs restore <set>` - Restores the saved <set>
-`/abs delete <set>` - Deletes the saved <set>
-`/abs list` - Lists all saved sets
-`/abs alias <spellID> <aliasID>` - Adds an alias with <aliasID> to <spellID>
-`/abs unalias <spellID>` - Removes all aliases associated with <spellID>
+`/abs save <set>` - Saves your current action bar setup under the given <set>\
+`/abs restore <set>` - Restores the saved <set>\
+`/abs delete <set>` - Deletes the saved <set>\
+`/abs list` - Lists all saved sets\
+`/abs alias <spellID> <aliasID>` - Adds an alias with <aliasID> to <spellID>\
+`/abs unalias <spellID>` - Removes all aliases associated with <spellID>\
 `/abs aliases` - List all spell aliases
 
 ## Known Issues
