@@ -1,4 +1,4 @@
-## Interface: 20504
+## Interface: 30400
 ## Title: ActionBarSaver: Reloaded
 ## Version: 1.0.0
 ## Notes: Manage, save, and restore action bar profiles
