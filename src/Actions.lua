@@ -216,6 +216,12 @@ function Actions:ListAliases()
     end)
 end
 
+function Actions:ToggleAutoRestoreOnRespec()
+    local autoRestoreOnRespec = not self.db.profile.autoRestoreOnRespec
+    self.db.profile.autoRestoreOnRespec = autoRestoreOnRespec
+    self:Print(string.format("%s auto restore on respec", autoRestoreOnRespec and "Enabled" or "Disabled"))
+end
+
 function Actions:PrintUsage()
     self:Print("ABS Slash commands")
     self:Print("/abs save <set> - Saves your current action bar setup under the given <set>")
@@ -225,4 +231,5 @@ function Actions:PrintUsage()
     self:Print("/abs alias <spellID> <aliasID> - Adds an alias with <aliasID> to <spellID>")
     self:Print("/abs unalias <spellID> - Removes all aliases associated with <spellID>")
     self:Print("/abs aliases - List all spell aliases")
+    self:Print("/abs autorestore - Toggles auto restoring of sets (integrates with Talented)")
 end
