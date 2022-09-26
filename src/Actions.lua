@@ -3,7 +3,8 @@ local Actions = _G.LibStub("AceAddon-3.0"):GetAddon(ADDON_NAME):NewModule("Actio
 local pickupActionButton = {
     item = PickupItem,
     spell = PickupSpell,
-    macro = PickupMacro
+    macro = PickupMacro,
+    companion = PickupSpell,
 }
 
 local function RestoreActionButton(self, index, actionButton)
