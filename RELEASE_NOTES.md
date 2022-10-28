@@ -1,3 +1,6 @@
+## 1.0.2 (2022-10-27)
+* Fixed bug where totem sets were not being saved or restored
+
 ## 1.0.1 (2022-09-26)
 * Fixed bug related to restoring sets containing companions and mounts
 
