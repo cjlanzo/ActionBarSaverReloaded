@@ -1,10 +1,25 @@
 local Actions = _G.LibStub("AceAddon-3.0"):GetAddon(ADDON_NAME):NewModule("Actions")
 
+local function PickupEquipmentSet(setName)
+    local setIndex = 0
+
+    for i=1,C_EquipmentSet.GetNumEquipmentSets() do
+        local sn = C_EquipmentSet.GetEquipmentSetInfo(i)
+
+        if sn == setName then
+            setIndex = i
+        end
+    end
+
+    C_EquipmentSet.PickupEquipmentSet(setIndex)
+end
+
 local pickupActionButton = {
     item = PickupItem,
     spell = PickupSpell,
     macro = PickupMacro,
     companion = PickupSpell,
+    equipmentset = PickupEquipmentSet,
 }
 
 local function RestoreActionButton(self, index, actionButton)

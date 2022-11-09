@@ -1,3 +1,6 @@
+## 1.0.3 (2022-11-09)
+* Fixed bug with equipment sets not being restored properly
+
 ## 1.0.2 (2022-10-27)
 * Fixed bug where totem sets were not being saved or restored
 
