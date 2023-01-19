@@ -1,3 +1,6 @@
+## 1.0.4 (2023-01-18)
+* TOC bump for WOTLK patch
+
 ## 1.0.3 (2022-11-09)
 * Fixed bug with equipment sets not being restored properly
 
