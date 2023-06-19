@@ -1,3 +1,6 @@
+## 1.0.5 (2023-06-20)
+* TOC bump for ToGC patch
+
 ## 1.0.4 (2023-01-18)
 * TOC bump for WOTLK patch
 
