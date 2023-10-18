@@ -1,6 +1,6 @@
-## Interface: 30402
+## Interface: 30403
 ## Title: ActionBarSaver: Reloaded
-## Version: 1.0.5
+## Version: 1.0.6
 ## Notes: Manage, save, and restore action bar profiles
 ## Author: Voodoomoose
 ## SavedVariables: ActionBarSaverReloaded
