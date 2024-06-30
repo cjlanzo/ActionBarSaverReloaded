@@ -98,10 +98,12 @@ function Actions:SaveSet(setName)
             if duplicates[id] then AddWarning(warnings, id, duplicates[id]) end
         end
 
-        set[i] = type and {
-            type = type,
-            id = id
-        }
+        if type and id then
+            set[i] = type and {
+                type = type,
+                id = id
+            }
+        end
     end
 
     self.db.class.sets[setName] = set
@@ -139,7 +141,7 @@ function Actions:RestoreSet(setName)
         
         local succeeded, restoredID = RestoreActionButton(self, i, actionButton)
         if not succeeded then
-            table.insert(messages, string.format("Error: Unable to restore %s with id [%s] to slot %d", set[i].type, set[i].id, i))
+            table.insert(messages, string.format("Error: Unable to restore %s with id [%s] to slot %d", actionButton.type, actionButton.id or "", i))
         elseif actionButton and restoredID ~= actionButton.id then
             table.insert(messages, string.format("Info: Restored spell %d (%s) in place of spell %d", restoredID, GetSpellInfo(restoredID), actionButton.id))
         end

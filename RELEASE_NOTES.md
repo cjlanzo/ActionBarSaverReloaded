@@ -1,3 +1,7 @@
+## 1.0.7 (2024-06-30)
+
+- Updated for Cata classic
+
 ## 1.0.6 (2023-08-29)
 
 - TOC bump for ICC patch
