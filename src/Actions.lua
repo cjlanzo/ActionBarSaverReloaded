@@ -15,11 +15,11 @@ local function PickupEquipmentSet(setName)
 end
 
 local pickupActionButton = {
-    item = PickupItem,
-    spell = PickupSpell,
+    item = C_Item.PickupItem,
+    spell = C_Spell.PickupSpell,
     macro = PickupMacro,
-    companion = PickupSpell,
-    equipmentset = PickupEquipmentSet,
+    companion = C_Spell.PickupSpell,
+    equipmentset = C_EquipmentSet.PickupEquipmentSet,
 }
 
 local function RestoreActionButton(self, index, actionButton)

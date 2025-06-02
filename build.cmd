@@ -5,8 +5,10 @@ set target=%1
 set addon_name=ActionBarSaverReloaded
 set addon_folder=C:\Program Files (x86)\World of Warcraft\_classic_\Interface\AddOns
 set ptr_addon_folder=C:\Program Files (x86)\World of Warcraft\_classic_ptr_\Interface\AddOns
+set beta_addon_folder=C:\Program Files (x86)\World of Warcraft\_classic_beta_\Interface\AddOns
 set publish_folder="%addon_folder%\%addon_name%"
 set ptr_publish_folder="%ptr_addon_folder%\%addon_name%"
+set beta_publish_folder="%beta_addon_folder%\%addon_name%"
 
 if exist build rmdir /Q /S build
 mkdir build
@@ -27,6 +29,12 @@ if %target% == ptr_publish (
     if exist %ptr_publish_folder% rmdir /Q /S %ptr_publish_folder%
     mkdir %ptr_publish_folder%
     xcopy build %ptr_publish_folder% /E
+)
+
+if %target% == beta_publish (
+    if exist %beta_publish_folder% rmdir /Q /S %beta_publish_folder%
+    mkdir %beta_publish_folder%
+    xcopy build %beta_publish_folder% /E
 )
 
 if %target% == release (

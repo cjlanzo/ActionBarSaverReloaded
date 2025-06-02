@@ -1,3 +1,7 @@
+## 1.0.8 (2025-06-01)
+
+- Updated for MoP Classic
+
 ## 1.0.7 (2024-06-30)
 
 - Updated for Cata classic
