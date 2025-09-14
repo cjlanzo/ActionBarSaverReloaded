@@ -3,7 +3,7 @@ cls
 
 set target=%1
 set addon_name=ActionBarSaverReloaded
-set addon_folder=C:\Program Files (x86)\World of Warcraft\_classic_\Interface\AddOns
+set addon_folder=C:\Program Files (x86)\World of Warcraft\_classic_era_\Interface\AddOns
 set publish_folder="%addon_folder%\%addon_name%"
 
 if exist build rmdir /Q /S build
