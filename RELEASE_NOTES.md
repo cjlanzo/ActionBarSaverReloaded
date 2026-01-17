@@ -1,3 +1,6 @@
+## 1.0.2 (2026-01-17)
+* Fixed restore bug for anniversary-tbc
+
 ## 1.0.1 (2022-09-26)
 * Fixed bug related to restoring sets containing companions and mounts
 
