@@ -1,3 +1,6 @@
+## 1.0.3 (2026-02-22)
+* Fixed issue with bars 6-10 not saving and restoring
+
 ## 1.0.2 (2026-01-17)
 * Fixed restore bug for anniversary-tbc
 
