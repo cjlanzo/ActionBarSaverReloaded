@@ -1,10 +1,10 @@
 local Actions = _G.LibStub("AceAddon-3.0"):GetAddon(ADDON_NAME):NewModule("Actions")
 
 local pickupActionButton = {
-    item = PickupItem,
-    spell = PickupSpell,
+    item = C_Item.PickupItem,
+    spell = C_Spell.PickupSpell,
     macro = PickupMacro,
-    companion = PickupSpell,
+    companion = C_Spell.PickupSpell,
 }
 
 local function RestoreActionButton(self, index, actionButton)
@@ -16,10 +16,14 @@ local function RestoreActionButton(self, index, actionButton)
 
     if not actionButton then return true, nil end
 
+    -- print("actionButton.type: " .. actionButton.type .. ", actionButton.id: " .. tostring(actionButton.id))
+
     local aliases = self.db.class.spellAliases[actionButton.id] or {}
     local ids = Array.insert(aliases, actionButton.id, 1)
 
     for _, id in ipairs(ids) do
+        -- print("actionButton.type: " .. actionButton.type .. ", id: " .. id)
+
         pickupActionButton[actionButton.type](id)
 
         if GetCursorInfo() == actionButton.type then
