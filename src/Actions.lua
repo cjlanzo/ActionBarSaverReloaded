@@ -19,8 +19,6 @@ local function RestoreActionButton(self, index, actionButton)
 
     if not actionButton then return true, nil end
 
-    -- print("actionButton.type: " .. actionButton.type .. ", actionButton.id: " .. tostring(actionButton.id))
-
     -- e.g. flyouts, or equipment sets on a client without them
     local pickup = pickupActionButton[actionButton.type]
     if not pickup then return false end
@@ -29,8 +27,6 @@ local function RestoreActionButton(self, index, actionButton)
     local ids = Array.insert(aliases, actionButton.id, 1)
 
     for _, id in ipairs(ids) do
-        -- print("actionButton.type: " .. actionButton.type .. ", id: " .. id)
-
         pickup(id)
 
         if GetCursorInfo() == actionButton.type then
