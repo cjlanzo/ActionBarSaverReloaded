@@ -1,6 +1,6 @@
 std = "lua51"
 max_line_length = false
-exclude_files = { "libs/", ".lua/", "build/", "release/" }
+exclude_files = { "src/Libs/", ".lua/", ".release/" }
 
 -- Globals the addon defines. These should move into the addon's private
 -- namespace (`local _, ns = ...`) so they can't clash with other addons.

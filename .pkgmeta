@@ -1,14 +1,33 @@
 package-as: ActionBarSaverReloaded
 
-# The addon lives in src/ and the vendored Ace3 libraries in libs/ace.
-# Embeds.xml loads them from Libs/.
+# The addon lives in src/. Embeds.xml loads the Ace3 libraries from src/Libs,
+# which the externals below fill in at build time.
 move-folders:
   ActionBarSaverReloaded/src: ActionBarSaverReloaded
-  ActionBarSaverReloaded/libs/ace: ActionBarSaverReloaded/Libs
 
-manual-changelog:
-  filename: RELEASE_NOTES.md
-  markup-type: markdown
+# Pinned to the Ace3 commit that fixes AceDB's region key on beta clients.
+# Move to a Release-r tag once one includes it.
+externals:
+  src/Libs/LibStub:
+    url: https://github.com/WoWUIDev/Ace3
+    commit: a3604956e6e98a2b41144e7dbffadb21b917f828
+    path: LibStub
+  src/Libs/CallbackHandler-1.0:
+    url: https://github.com/WoWUIDev/Ace3
+    commit: a3604956e6e98a2b41144e7dbffadb21b917f828
+    path: CallbackHandler-1.0
+  src/Libs/AceAddon-3.0:
+    url: https://github.com/WoWUIDev/Ace3
+    commit: a3604956e6e98a2b41144e7dbffadb21b917f828
+    path: AceAddon-3.0
+  src/Libs/AceConsole-3.0:
+    url: https://github.com/WoWUIDev/Ace3
+    commit: a3604956e6e98a2b41144e7dbffadb21b917f828
+    path: AceConsole-3.0
+  src/Libs/AceDB-3.0:
+    url: https://github.com/WoWUIDev/Ace3
+    commit: a3604956e6e98a2b41144e7dbffadb21b917f828
+    path: AceDB-3.0
 
 # Dev-only files. Files starting with a period are always left out.
 ignore:
@@ -16,4 +35,3 @@ ignore:
   - AGENTS.md
   - CLAUDE.md
   - build.cmd
-  - clean.cmd

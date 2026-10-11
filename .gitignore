@@ -39,10 +39,11 @@ luac.out
 *.x86_64
 *.hex
 
-/build
-/release
 # Local Lua toolchain (hererocks)
 /.lua
 
 # Packager output
 /.release
+
+# Ace3 libraries, fetched by the packager (see .pkgmeta externals)
+/src/Libs
