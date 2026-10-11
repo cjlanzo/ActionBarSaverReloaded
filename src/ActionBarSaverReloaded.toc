@@ -1,4 +1,4 @@
-## Interface: 16001
+## Interface: 11509, 20506, 30405, 40402, 50504, 16001
 ## Title: ActionBarSaver: Reloaded
 ## Version: 1.0.0
 ## Notes: Manage, save, and restore action bar profiles
@@ -7,7 +7,8 @@
 
 Embeds.xml
 
-Constants.lua
+constants.lua
+Compat.lua
 StringHelpers.lua
 TableHelpers.lua
 Main.lua

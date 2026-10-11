@@ -1,10 +1,13 @@
+local _, ns = ...
+local Compat = ns.Compat
 local Actions = _G.LibStub("AceAddon-3.0"):GetAddon(ADDON_NAME):NewModule("Actions")
 
 local pickupActionButton = {
-    item = C_Item.PickupItem,
-    spell = C_Spell.PickupSpell,
-    macro = PickupMacro,
-    companion = C_Spell.PickupSpell,
+    item = Compat.PickupItem,
+    spell = Compat.PickupSpell,
+    macro = Compat.PickupMacro,
+    companion = Compat.PickupSpell,
+    equipmentset = Compat.PickupEquipmentSet,
 }
 
 local function RestoreActionButton(self, index, actionButton)
@@ -78,7 +81,7 @@ function Actions:SaveSet(setName)
     local set = {}
     local warnings = {}
 
-    for i = 1, MAX_ACTION_BUTTONS do
+    for i = 1, Compat.MaxActionSlots do
         local type, id = GetActionInfo(i)
 
         if type == "macro" then
@@ -87,10 +90,12 @@ function Actions:SaveSet(setName)
             if duplicates[id] then AddWarning(warnings, id, duplicates[id]) end
         end
 
-        set[i] = type and {
-            type = type,
-            id = id
-        }
+        if type and id then
+            set[i] = {
+                type = type,
+                id = id
+            }
+        end
     end
 
     self.db.class.sets[setName] = set
@@ -121,7 +126,7 @@ function Actions:RestoreSet(setName)
     -- Start with an empty cursor
     ClearCursor()
 
-    for i = 1, MAX_ACTION_BUTTONS do
+    for i = 1, Compat.MaxActionSlots do
         local actionButton = set[i]
 
         if IsMacro(actionButton) and duplicates[actionButton.id] then AddWarning(messages, actionButton.id, duplicates[actionButton.id]) end
@@ -130,7 +135,7 @@ function Actions:RestoreSet(setName)
         if not succeeded then
             table.insert(messages, string.format("Error: Unable to restore %s with id [%s] to slot %d", set[i].type, set[i].id or "?", i))
         elseif actionButton and restoredID ~= actionButton.id then
-            table.insert(messages, string.format("Info: Restored spell %d (%s) in place of spell %d", restoredID, GetSpellInfo(restoredID), actionButton.id))
+            table.insert(messages, string.format("Info: Restored spell %d (%s) in place of spell %d", restoredID, Compat.GetSpellName(restoredID), actionButton.id))
         end
     end
 
