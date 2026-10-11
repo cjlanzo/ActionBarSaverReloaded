@@ -18,14 +18,14 @@ Clients differ in which WoW APIs they have. All of those differences live in `sr
   - `Main.lua` registers the addon, its saved variables and the `/abs` command.
   - `Actions.lua` implements the commands. Commands run with `self` set to the addon, not the module.
   - Sets and aliases are saved per class in `db.class.sets` and `db.class.spellAliases`.
-- `libs/ace/`: the vendored Ace3 libraries, copied into the build as `Libs/`. Don't edit them.
+- Ace3 isn't in the repo. The packager downloads the libraries `Embeds.xml` loads into `Libs/` at build time (`externals` in `.pkgmeta`). To use another Ace3 library, add it to both.
 - `spec/`: busted tests. `spec/helpers/wow.lua` is a fake WoW client.
-- `build.cmd`: Windows-only script that copies a build into a local WoW install for testing.
+- `build.cmd`: Windows-only script. It builds with the packager and copies the result into a local WoW install for testing. It needs `bash` on the PATH.
 - `.pkgmeta` and `.github/workflows/release.yml`: release packaging (see Releases).
 
 ## Tests and lint
 
-Run both before calling a change done. CI runs them on every push and pull request (`.github/workflows/test.yml`).
+Run both before calling a change done. A pre-commit hook in `.githooks/` runs them on every commit; turn it on once per clone with `git config core.hooksPath .githooks`. CI runs them again on every push and pull request (`.github/workflows/test.yml`).
 
 One-time setup: a local Lua 5.1 toolchain in `.lua/`, which git ignores.
 
@@ -59,10 +59,10 @@ The fakes only model what the addon uses. Passing tests don't prove the addon wo
 
 Releases are built by the [BigWigs packager](https://github.com/BigWigsMods/packager) when a tag is pushed. `.github/workflows/release.yml` runs it, and it uploads to CurseForge and GitHub Releases.
 
-- `.pkgmeta` moves `src/` to the top of the zip, moves `libs/ace/` to `Libs/`, and leaves out dev-only files. Add new dev-only files to its `ignore` list.
+- `.pkgmeta` moves `src/` to the top of the zip, downloads Ace3 into `Libs/`, and leaves out dev-only files. Add new dev-only files to its `ignore` list.
 - The tag becomes the version: `## Version: @project-version@` in the `.toc` is replaced at build time, so don't edit it by hand. Use plain tags like `1.1.0`, not `v1.1.0`, because the tag is used as-is.
 - The game versions shown on CurseForge come from the `## Interface:` line.
-- The CurseForge changelog is `RELEASE_NOTES.md`. Before tagging, rename its `## Unreleased` heading to the version and date.
+- The CurseForge changelog is built from the commit messages since the previous tag. Players read them, so follow `.claude/skills/changelog/SKILL.md` when committing, merging or tagging.
 - Uploading needs a `CF_API_TOKEN` repository secret.
 - To build a zip locally without uploading, run the packager's `release.sh -d` from the repo root. The zip goes in `.release/`, which git ignores.
 
@@ -71,4 +71,4 @@ Releases are built by the [BigWigs packager](https://github.com/BigWigsMods/pack
 - Commit messages follow Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`, …).
 - Pull requests target `main`.
 - Match the surrounding style: 4-space indents, PascalCase for local functions and methods, short comments only where the reason isn't obvious.
-- Player-visible changes get a line in `RELEASE_NOTES.md`.
+- Pull requests are squash-merged, and the squash commit is written for players (see the changelog skill).
