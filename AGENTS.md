@@ -4,7 +4,7 @@ A World of Warcraft addon that saves and restores action bar layouts with `/abs`
 
 ## One codebase for every client
 
-One branch, `develop`, builds the addon for every supported game client: Era, TBC, Wrath, Cata, Mists and Forever. `src/ActionBarSaverReloaded.toc` lists their interface versions on a single `## Interface:` line. The `release/*` branches are the old one-branch-per-client setup; leave them alone unless asked.
+One branch, `main`, builds the addon for every supported game client: Era, TBC, Wrath, Cata, Mists and Forever. `src/ActionBarSaverReloaded.toc` lists their interface versions on a single `## Interface:` line. The `release/*` branches are the old one-branch-per-client setup; leave them alone unless asked.
 
 Clients differ in which WoW APIs they have. All of those differences live in `src/Compat.lua`:
 
@@ -57,6 +57,6 @@ The fakes only model what the addon uses. Passing tests don't prove the addon wo
 ## Conventions
 
 - Commit messages follow Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`, …).
-- Pull requests target `develop`.
+- Pull requests target `main`.
 - Match the surrounding style: 4-space indents, PascalCase for local functions and methods, short comments only where the reason isn't obvious.
 - Player-visible changes get a line in `RELEASE_NOTES.md`.
