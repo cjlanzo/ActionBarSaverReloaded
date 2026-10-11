@@ -62,7 +62,7 @@ Releases are built by the [BigWigs packager](https://github.com/BigWigsMods/pack
 - `.pkgmeta` moves `src/` to the top of the zip, downloads Ace3 into `Libs/`, and leaves out dev-only files. Add new dev-only files to its `ignore` list.
 - The tag becomes the version: `## Version: @project-version@` in the `.toc` is replaced at build time, so don't edit it by hand. Use plain tags like `1.1.0`, not `v1.1.0`, because the tag is used as-is.
 - The game versions shown on CurseForge come from the `## Interface:` line.
-- The CurseForge changelog is built from the commit messages since the previous tag. Players read them, so follow `.claude/skills/changelog/SKILL.md` when committing, merging or tagging.
+- `CHANGELOG.md` is the changelog players see on CurseForge and GitHub Releases. Add a line to it in any PR that changes something players notice, and follow `.claude/skills/changelog/SKILL.md`.
 - Uploading needs a `CF_API_TOKEN` repository secret.
 - To build a zip locally without uploading, run the packager's `release.sh -d` from the repo root. The zip goes in `.release/`, which git ignores.
 
@@ -71,4 +71,4 @@ Releases are built by the [BigWigs packager](https://github.com/BigWigsMods/pack
 - Commit messages follow Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`, …).
 - Pull requests target `main`.
 - Match the surrounding style: 4-space indents, PascalCase for local functions and methods, short comments only where the reason isn't obvious.
-- Pull requests are squash-merged, and the squash commit is written for players (see the changelog skill).
+- Pull requests are squash-merged.
