@@ -41,3 +41,5 @@ luac.out
 
 /build
 /release
+# Local Lua toolchain (hererocks)
+/.lua

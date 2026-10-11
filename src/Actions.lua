@@ -130,7 +130,7 @@ function Actions:RestoreSet(setName)
         local actionButton = set[i]
 
         if IsMacro(actionButton) and duplicates[actionButton.id] then AddWarning(messages, actionButton.id, duplicates[actionButton.id]) end
-        
+
         local succeeded, restoredID = RestoreActionButton(self, i, actionButton)
         if not succeeded then
             table.insert(messages, string.format("Error: Unable to restore %s with id [%s] to slot %d", set[i].type, set[i].id or "?", i))
@@ -183,7 +183,7 @@ function Actions:AliasSpell(args)
     end
 
     local aliases = self.db.class.spellAliases[spellID] or {}
-    
+
     if Array.contains(aliases, aliasID) then
         self:Print(string.format("Spell %d is already aliased by %d", spellID, aliasID))
         return
@@ -221,8 +221,8 @@ function Actions:ListAliases()
         return
     end
 
-    Dict.iter(self.db.class.spellAliases, function(spellID, aliases)
-        self:Print(string.format("Spell %d is aliased by: %s", spellID, table.concat(aliases, ", ")))
+    Dict.iter(self.db.class.spellAliases, function(spellID, spellAliases)
+        self:Print(string.format("Spell %d is aliased by: %s", spellID, table.concat(spellAliases, ", ")))
     end)
 end
 
