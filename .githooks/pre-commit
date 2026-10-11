@@ -1,0 +1,11 @@
+#!/bin/sh
+# Lint and test before each commit. Enable with: git config core.hooksPath .githooks
+# Skip once with: git commit --no-verify
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+if [ ! -x .lua/bin/busted ] || [ ! -x .lua/bin/luacheck ]; then
+    echo "pre-commit: no Lua toolchain in .lua/. See \"Tests and lint\" in AGENTS.md." >&2
+    exit 1
+fi
+
+.lua/bin/luacheck -q src spec && .lua/bin/busted -o utfTerminal
