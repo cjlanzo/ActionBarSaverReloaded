@@ -17,4 +17,3 @@ ignore:
   - CLAUDE.md
   - build.cmd
   - clean.cmd
-  - push_release_to_curseforge.ps1
