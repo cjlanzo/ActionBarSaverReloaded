@@ -1,9 +1,10 @@
 ## Interface: 11509, 20506, 30405, 40402, 50504, 16001
 ## Title: ActionBarSaver: Reloaded
-## Version: 1.0.0
+## Version: @project-version@
 ## Notes: Manage, save, and restore action bar profiles
 ## Author: Voodoomoose
 ## SavedVariables: ActionBarSaverReloaded
+## X-Curse-Project-ID: 591902
 
 Embeds.xml
 

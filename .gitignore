@@ -43,3 +43,6 @@ luac.out
 /release
 # Local Lua toolchain (hererocks)
 /.lua
+
+# Packager output
+/.release

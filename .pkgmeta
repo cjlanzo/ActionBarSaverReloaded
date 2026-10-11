@@ -1,0 +1,20 @@
+package-as: ActionBarSaverReloaded
+
+# The addon lives in src/ and the vendored Ace3 libraries in libs/ace.
+# Embeds.xml loads them from Libs/.
+move-folders:
+  ActionBarSaverReloaded/src: ActionBarSaverReloaded
+  ActionBarSaverReloaded/libs/ace: ActionBarSaverReloaded/Libs
+
+manual-changelog:
+  filename: RELEASE_NOTES.md
+  markup-type: markdown
+
+# Dev-only files. Files starting with a period are always left out.
+ignore:
+  - spec
+  - AGENTS.md
+  - CLAUDE.md
+  - build.cmd
+  - clean.cmd
+  - push_release_to_curseforge.ps1
