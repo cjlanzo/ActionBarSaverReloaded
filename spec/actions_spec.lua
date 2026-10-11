@@ -51,6 +51,24 @@ for _, client in ipairs(wow.clients) do
                 assert.are.same({ type = "macro", id = 5 }, game.bar[1])
             end)
 
+            it("restores macros that show a spell or an item", function()
+                game.macros[2] = "Opener"
+                game.macroContents[2] = { type = "spell", id = 100 }
+                game.macros[3] = "Trinket"
+                game.macroContents[3] = { type = "item", id = 6948 }
+                game.bar[1] = { type = "macro", id = 2 }
+                game.bar[2] = { type = "macro", id = 3 }
+
+                game:slash("save test")
+                game:clearBar()
+                game:slash("restore test")
+
+                assert.are.same({
+                    [1] = { type = "macro", id = 2 },
+                    [2] = { type = "macro", id = 3 },
+                }, game.bar)
+            end)
+
             it("saves only slots that have an action", function()
                 game.bar[7] = { type = "spell", id = 100 }
 
@@ -123,7 +141,21 @@ for _, client in ipairs(wow.clients) do
                 assert.are.same({ "No set with the name 'missing' exists" }, game:messages())
             end)
 
-            pending("reports an action type it has no pickup for, such as a flyout, instead of erroring")
+            it("reports an action type it can't pick up, such as a flyout, and keeps going", function()
+                game.bar[1] = { type = "flyout", id = 9 }
+                game.bar[2] = { type = "spell", id = 100 }
+                game:slash("save test")
+
+                game:clearBar()
+                game:clearOutput()
+                game:slash("restore test")
+
+                assert.are.same({ [2] = { type = "spell", id = 100 } }, game.bar)
+                assert.are.same({
+                    "Restored set 'test'",
+                    "Error: Unable to restore flyout with id [9] to slot 1",
+                }, game:messages())
+            end)
         end)
 
         describe("spell aliases", function()

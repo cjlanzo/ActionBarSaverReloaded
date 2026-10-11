@@ -17,6 +17,9 @@ wow.clients = {
         name = "Forever",
         maxSlots = 180,
         namespacedApis = true,
+        -- Since 10.2, GetActionInfo reports what a macro shows instead of
+        -- the macro's index: a spell ID, or a meaningless number for items
+        macroActionsReportContents = true,
     },
     {
         name = "TBC Anniversary",
@@ -114,6 +117,7 @@ local function FakeGameApis(game, client)
     game.spells = {}         -- [spellID] = name, for spells the character knows
     game.items = {}          -- [itemID] = name, for items the character has
     game.macros = {}         -- [index] = name
+    game.macroContents = {}  -- [index] = { type = "spell" or "item", id = ID } for what a macro shows
     game.equipmentSets = {}  -- [setID] = name
 
     game.bar = {}
@@ -140,7 +144,21 @@ local function FakeGameApis(game, client)
     function api.GetActionInfo(slot)
         checkSlot(slot)
         local action = game.bar[slot]
-        if action then return action.type, action.id end
+        if not action then return end
+
+        local contents = game.macroContents[action.id]
+        if action.type == "macro" and contents and client.macroActionsReportContents then
+            return "macro", contents.type == "spell" and contents.id or slot - 1, contents.type
+        end
+
+        return action.type, action.id
+    end
+
+    -- For a macro, its name
+    function api.GetActionText(slot)
+        checkSlot(slot)
+        local action = game.bar[slot]
+        if action and action.type == "macro" then return game.macros[action.id] end
     end
 
     function api.ClearCursor() game.cursor = nil end

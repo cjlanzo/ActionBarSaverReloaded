@@ -13,7 +13,7 @@ self = false
 -- clients have, so list every variant here.
 read_globals = {
     "LibStub",
-    "ClearCursor", "GetActionInfo", "GetCursorInfo", "GetMacroInfo", "InCombatLockdown",
+    "ClearCursor", "GetActionInfo", "GetActionText", "GetCursorInfo", "GetMacroInfo", "InCombatLockdown",
     "PickupAction", "PickupItem", "PickupMacro", "PickupSpell", "PlaceAction",
     "GetSpellInfo",
     "C_EquipmentSet", "C_Item", "C_Spell",

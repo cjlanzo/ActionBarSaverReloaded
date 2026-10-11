@@ -21,13 +21,17 @@ local function RestoreActionButton(self, index, actionButton)
 
     -- print("actionButton.type: " .. actionButton.type .. ", actionButton.id: " .. tostring(actionButton.id))
 
+    -- e.g. flyouts, or equipment sets on a client without them
+    local pickup = pickupActionButton[actionButton.type]
+    if not pickup then return false end
+
     local aliases = self.db.class.spellAliases[actionButton.id] or {}
     local ids = Array.insert(aliases, actionButton.id, 1)
 
     for _, id in ipairs(ids) do
         -- print("actionButton.type: " .. actionButton.type .. ", id: " .. id)
 
-        pickupActionButton[actionButton.type](id)
+        pickup(id)
 
         if GetCursorInfo() == actionButton.type then
             PlaceAction(index)
@@ -85,8 +89,9 @@ function Actions:SaveSet(setName)
         local type, id = GetActionInfo(i)
 
         if type == "macro" then
-            -- use macro name as the ID
-            id = GetMacroInfo(id)
+            -- Use the macro name as the ID. Mainline clients report the spell or
+            -- item a macro shows in place of its index, so ask the slot instead
+            id = GetActionText(i)
             if duplicates[id] then AddWarning(warnings, id, duplicates[id]) end
         end
 
