@@ -38,7 +38,7 @@ hererocks .lua -l5.1 -rlatest --no-readline
 Then run:
 
 ```sh
-.lua/bin/luacheck .
+.lua/bin/luacheck src spec
 .lua/bin/busted
 ```
 
