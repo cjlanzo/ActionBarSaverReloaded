@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1
+
+- Mounts now restore on Forever. Sets you already saved keep working, so you don't need to save them again.
+
 ## 2.0.0
 
 - Re-save any set that contains macros. Sets saved with 1.0.0 on Forever or the Classic beta are missing some macro names, so those macros fail to restore with "Unable to restore macro with id [?]". Set your bars up again and run `/abs save <name>` to replace the set.

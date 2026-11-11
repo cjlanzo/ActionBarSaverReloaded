@@ -40,6 +40,23 @@ for _, client in ipairs(wow.clients) do
                 assert.are.same({ "Saved set 'test'!", "Restored set 'test'" }, game:messages())
             end)
 
+            if client.mountJournal then
+                it("restores mounts, wherever they sit in the mount journal", function()
+                    game.mounts = { 3128, 3130 }
+                    game.bar[36] = { type = "summonmount", id = 3130 }
+                    game.bar[37] = { type = "summonmount", id = 268435455 }
+                    game:slash("save test")
+
+                    game.mounts = { 3130, 3128 }
+                    game:clearBar()
+                    game:slash("restore test")
+
+                    assert.are.same({ type = "summonmount", id = 3130 }, game.bar[36])
+                    assert.are.same({ type = "summonmount", id = 268435455 }, game.bar[37])
+                    assert.are.same({ "Saved set 'test'!", "Restored set 'test'" }, game:messages())
+                end)
+            end
+
             it("saves macros by name, so they survive being reordered", function()
                 game.bar[1] = { type = "macro", id = 1 }
                 game:slash("save test")
