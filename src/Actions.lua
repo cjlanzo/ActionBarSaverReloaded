@@ -8,6 +8,12 @@ local pickupActionButton = {
     macro = Compat.PickupMacro,
     companion = Compat.PickupSpell,
     equipmentset = Compat.PickupEquipmentSet,
+    summonmount = Compat.PickupMount,
+}
+
+-- Action types whose cursor type differs from what the action bar reports
+local cursorType = {
+    summonmount = "mount",
 }
 
 local function RestoreActionButton(self, index, actionButton)
@@ -29,7 +35,7 @@ local function RestoreActionButton(self, index, actionButton)
     for _, id in ipairs(ids) do
         pickup(id)
 
-        if GetCursorInfo() == actionButton.type then
+        if GetCursorInfo() == (cursorType[actionButton.type] or actionButton.type) then
             PlaceAction(index)
             return true, id
         end

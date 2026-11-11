@@ -23,6 +23,27 @@ if C_EquipmentSet then
     end
 end
 
+-- Mounts live in the mount journal. Action bars report them by mount ID, but
+-- pickup takes an index into the journal's displayed (filtered) list.
+-- Index 0 is the "Summon Random Favorite Mount" button.
+if C_MountJournal then
+    local RANDOM_FAVORITE_MOUNT_ID = 268435455
+
+    function Compat.PickupMount(mountID)
+        if mountID == RANDOM_FAVORITE_MOUNT_ID then
+            C_MountJournal.Pickup(0)
+            return
+        end
+
+        for i = 1, C_MountJournal.GetNumDisplayedMounts() do
+            if C_MountJournal.GetDisplayedMountID(i) == mountID then
+                C_MountJournal.Pickup(i)
+                return
+            end
+        end
+    end
+end
+
 -- Clients have 120, 132 or 180 action slots, and the interface version
 -- doesn't tell them apart, so use the highest slot the client accepts
 local function FindMaxActionSlots()

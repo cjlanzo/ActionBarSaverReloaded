@@ -20,6 +20,8 @@ wow.clients = {
         -- Since 10.2, GetActionInfo reports what a macro shows instead of
         -- the macro's index: a spell ID, or a meaningless number for items
         macroActionsReportContents = true,
+        -- Mounts are a collection, not items or companion spells
+        mountJournal = true,
     },
     {
         name = "TBC Anniversary",
@@ -119,6 +121,7 @@ local function FakeGameApis(game, client)
     game.macros = {}         -- [index] = name
     game.macroContents = {}  -- [index] = { type = "spell" or "item", id = ID } for what a macro shows
     game.equipmentSets = {}  -- [setID] = name
+    game.mounts = {}         -- mount IDs in the journal's displayed order (Forever only)
 
     game.bar = {}
     game.cursor = nil
@@ -210,6 +213,27 @@ local function FakeGameApis(game, client)
             if name then game.cursor = { type = "equipmentset", id = name } end
         end,
     }
+
+    if client.mountJournal then
+        api.C_MountJournal = {
+            GetNumDisplayedMounts = function() return #game.mounts end,
+            GetDisplayedMountID = function(index) return game.mounts[index] end,
+            -- Takes a journal index; the bar reports "summonmount" but the cursor holds "mount"
+            Pickup = function(index)
+                local mountID = index == 0 and 268435455 or game.mounts[index]
+                if mountID then game.cursor = { type = "mount", id = mountID } end
+            end,
+        }
+
+        -- Placing a mount from the cursor shows it on the bar as "summonmount"
+        local placeAction = api.PlaceAction
+        function api.PlaceAction(slot)
+            if game.cursor and game.cursor.type == "mount" then
+                game.cursor = { type = "summonmount", id = game.cursor.id }
+            end
+            placeAction(slot)
+        end
+    end
 
     if client.namespacedApis then
         api.C_Spell = { PickupSpell = pickupSpell, GetSpellName = getSpellName }
