@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.2
 
 - Transmog outfits on your action bars now restore on Forever.
 
