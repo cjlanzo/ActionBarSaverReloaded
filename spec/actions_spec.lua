@@ -223,6 +223,22 @@ for _, client in ipairs(wow.clients) do
                 }, game:messages())
             end)
 
+            it("says the group was tried when nothing in it can be restored", function()
+                game:slash("alias spell racials 20554 7744")
+                game.bar[1] = { type = "spell", id = 20554 }
+                game:slash("save test")
+
+                game:clearBar()
+                game:clearOutput()
+                game:slash("restore test")
+
+                assert.is_nil(game.bar[1])
+                assert.are.same({
+                    "Restored set 'test'",
+                    "Error: Unable to restore spell 20554 or anything in its group 'racials' to slot 1",
+                }, game:messages())
+            end)
+
             it("restores items from an item group", function()
                 game:slash("alias item hearth 6948 2")
                 game.bar[1] = { type = "item", id = 2 }

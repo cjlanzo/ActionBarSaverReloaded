@@ -46,7 +46,7 @@ local function RestoreActionButton(self, index, actionButton)
     if not pickup then return false end
 
     local ids = { actionButton.id }
-    local _, group = FindAliasGroup(self, actionButton.type, actionButton.id)
+    local label, group = FindAliasGroup(self, actionButton.type, actionButton.id)
     for _, id in ipairs(group or {}) do
         if id ~= actionButton.id then table.insert(ids, id) end
     end
@@ -62,7 +62,8 @@ local function RestoreActionButton(self, index, actionButton)
         ClearCursor()
     end
 
-    return false
+    -- The group's label, so the error can say the group was tried too
+    return false, nil, label
 end
 
 local function IsMacro(actionButton) return actionButton and actionButton.type == "macro" end
@@ -157,8 +158,11 @@ function Actions:RestoreSet(setName)
 
         if IsMacro(actionButton) and duplicates[actionButton.id] then AddWarning(messages, actionButton.id, duplicates[actionButton.id]) end
 
-        local succeeded, restoredID = RestoreActionButton(self, i, actionButton)
-        if not succeeded then
+        local succeeded, restoredID, groupLabel = RestoreActionButton(self, i, actionButton)
+        if not succeeded and groupLabel then
+            table.insert(messages, string.format("Error: Unable to restore %s %d or anything in its group '%s' to slot %d",
+                aliasTypeNames[actionButton.type], actionButton.id, groupLabel, i))
+        elseif not succeeded then
             table.insert(messages, string.format("Error: Unable to restore %s with id [%s] to slot %d", set[i].type, set[i].id or "?", i))
         elseif actionButton and restoredID ~= actionButton.id then
             local typeName = aliasTypeNames[actionButton.type]
