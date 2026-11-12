@@ -125,6 +125,8 @@ local function FakeGameApis(game, client)
     game.outfits = {}        -- [outfitID] = name (Forever only)
     game.mounts = {}         -- mount IDs in the journal's displayed order (Forever only)
 
+    game.class = "WARRIOR"
+
     game.bar = {}
     game.cursor = nil
     game.inCombat = false
@@ -173,6 +175,11 @@ local function FakeGameApis(game, client)
     end
 
     function api.InCombatLockdown() return game.inCombat end
+
+    function api.UnitClass(unit)
+        assert(unit == "player", "only the player's class is faked")
+        return "Localized " .. game.class, game.class
+    end
 
     local function pickupSpell(spellID)
         if game.spells[spellID] then game.cursor = { type = "spell", id = spellID } end
@@ -276,6 +283,7 @@ end
 --   game:slash("save mySet")   run /abs with the given input
 --   game.bar[slot]             what's on the action bar
 --   game.output                lines the addon printed, without color codes
+--   game.window                what the export or import window was asked to show
 -- savedDb, if given, is the addon's saved variables from an earlier session.
 function wow.load(client, savedDb)
     if type(client) == "string" then client = wow.client(client) end
@@ -307,6 +315,14 @@ function wow.load(client, savedDb)
     end
 
     game.ns = ns
+
+    -- The windows need AceGUI, which isn't faked. Record what they're asked
+    -- to show instead: game.window.text for an export, game.window.submit(text, replace)
+    -- for an import.
+    ns.Window = {
+        ShowExport = function(title, text) game.window = { title = title, text = text } end,
+        ShowImport = function(title, onImport) game.window = { title = title, submit = onImport } end,
+    }
     game.addon = env.LibStub("AceAddon-3.0"):GetAddon(ADDON_NAME)
     game.addon:OnInitialize()
     game.db = game.addon.db

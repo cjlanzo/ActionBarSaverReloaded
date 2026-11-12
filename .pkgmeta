@@ -28,6 +28,10 @@ externals:
     url: https://github.com/WoWUIDev/Ace3
     commit: a3604956e6e98a2b41144e7dbffadb21b917f828
     path: AceDB-3.0
+  src/Libs/AceGUI-3.0:
+    url: https://github.com/WoWUIDev/Ace3
+    commit: a3604956e6e98a2b41144e7dbffadb21b917f828
+    path: AceGUI-3.0
 
 # Players read this on CurseForge and GitHub Releases.
 manual-changelog:

@@ -23,6 +23,8 @@ function ABS:OnInitialize()
         alias   = self.actions.Alias,
         unalias = self.actions.Unalias,
         aliases = self.actions.ListAliases,
+        export  = self.actions.Export,
+        import  = self.actions.Import,
     }
 
     self:RegisterChatCommand("abs", "HandleCommands")
