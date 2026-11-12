@@ -16,7 +16,7 @@ read_globals = {
     "ClearCursor", "GetActionInfo", "GetActionText", "GetCursorInfo", "GetMacroInfo", "InCombatLockdown",
     "PickupAction", "PickupItem", "PickupMacro", "PickupSpell", "PlaceAction",
     "GetSpellInfo",
-    "C_EquipmentSet", "C_Item", "C_MountJournal", "C_Spell",
+    "C_EquipmentSet", "C_Item", "C_MountJournal", "C_TransmogOutfitInfo", "C_Spell",
     string = { fields = { "split" } },
 }
 
