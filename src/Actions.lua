@@ -27,7 +27,7 @@ local aliasTypes = {
 local aliasTypeNames = { spell = "spell", item = "item", summonmount = "mount" }
 
 local function FindAliasGroup(self, actionType, id)
-    for label, ids in pairs(self.db.class.aliasGroups[actionType] or {}) do
+    for label, ids in pairs(self.db.global.aliasGroups[actionType] or {}) do
         if Array.contains(ids, id) then return label, ids end
     end
 end
@@ -247,7 +247,7 @@ function Actions:Alias(args)
     local actionType, typeName, label, ids = ParseAliasArgs(self, args, ALIAS_USAGE, true)
     if not actionType then return end
 
-    local groups = self.db.class.aliasGroups
+    local groups = self.db.global.aliasGroups
     groups[actionType] = groups[actionType] or {}
     local group = groups[actionType][label] or {}
 
@@ -271,7 +271,7 @@ function Actions:Unalias(args)
     local actionType, typeName, label, ids = ParseAliasArgs(self, args, UNALIAS_USAGE, false)
     if not actionType then return end
 
-    local groups = self.db.class.aliasGroups[actionType] or {}
+    local groups = self.db.global.aliasGroups[actionType] or {}
     local group = groups[label]
 
     if not group then
@@ -312,7 +312,7 @@ function Actions:ListAliases()
     local found = false
 
     for _, typeName in ipairs({ "spell", "item", "mount" }) do
-        local groups = self.db.class.aliasGroups[aliasTypes[typeName]] or {}
+        local groups = self.db.global.aliasGroups[aliasTypes[typeName]] or {}
         local labels = Dict.keysAsArray(groups)
         table.sort(labels)
 

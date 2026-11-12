@@ -2,10 +2,14 @@ local ABS = _G.LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceConsole-3.0")
 
 function ABS:OnInitialize()
     self.db = _G.LibStub("AceDB-3.0"):New(ADDON_NAME, {
-        class = {
+        -- Aliases are shared by every character on the account: racials and
+        -- faction mounts don't depend on class
+        global = {
             aliasGroups = {},
+        },
+        class = {
             sets = {},
-        }
+        },
     })
     -- Replaced by aliasGroups; players set their aliases up again
     self.db.class.spellAliases = nil

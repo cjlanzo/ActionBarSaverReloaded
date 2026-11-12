@@ -191,7 +191,7 @@ for _, client in ipairs(wow.clients) do
         end)
 
         describe("alias groups", function()
-            local function groups() return game.db.class.aliasGroups end
+            local function groups() return game.db.global.aliasGroups end
 
             it("restores another spell in the group, whichever one was saved", function()
                 -- Troll and tauren racials: neither character can have the other's
