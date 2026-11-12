@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.2
+
+- Transmog outfits on your action bars now restore on Forever.
+
 ## 2.0.1
 
 - Mounts now restore on Forever. Sets you already saved keep working, so you don't need to save them again.

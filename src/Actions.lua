@@ -9,6 +9,7 @@ local pickupActionButton = {
     companion = Compat.PickupSpell,
     equipmentset = Compat.PickupEquipmentSet,
     summonmount = Compat.PickupMount,
+    outfit = Compat.PickupOutfit,
 }
 
 -- Action types whose cursor type differs from what the action bar reports

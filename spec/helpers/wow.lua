@@ -22,6 +22,7 @@ wow.clients = {
         macroActionsReportContents = true,
         -- Mounts are a collection, not items or companion spells
         mountJournal = true,
+        transmogOutfits = true,
     },
     {
         name = "TBC Anniversary",
@@ -121,6 +122,7 @@ local function FakeGameApis(game, client)
     game.macros = {}         -- [index] = name
     game.macroContents = {}  -- [index] = { type = "spell" or "item", id = ID } for what a macro shows
     game.equipmentSets = {}  -- [setID] = name
+    game.outfits = {}        -- [outfitID] = name (Forever only)
     game.mounts = {}         -- mount IDs in the journal's displayed order (Forever only)
 
     game.bar = {}
@@ -213,6 +215,14 @@ local function FakeGameApis(game, client)
             if name then game.cursor = { type = "equipmentset", id = name } end
         end,
     }
+
+    if client.transmogOutfits then
+        api.C_TransmogOutfitInfo = {
+            PickupOutfit = function(outfitID)
+                if game.outfits[outfitID] then game.cursor = { type = "outfit", id = outfitID } end
+            end,
+        }
+    end
 
     if client.mountJournal then
         api.C_MountJournal = {

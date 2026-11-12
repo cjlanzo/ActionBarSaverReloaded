@@ -44,6 +44,9 @@ if C_MountJournal then
     end
 end
 
+-- Transmog outfits, on clients with the outfit system
+Compat.PickupOutfit = C_TransmogOutfitInfo and C_TransmogOutfitInfo.PickupOutfit
+
 -- Clients have 120, 132 or 180 action slots, and the interface version
 -- doesn't tell them apart, so use the highest slot the client accepts
 local function FindMaxActionSlots()

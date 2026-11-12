@@ -57,6 +57,22 @@ for _, client in ipairs(wow.clients) do
                 end)
             end
 
+            if client.transmogOutfits then
+                it("restores transmog outfits", function()
+                    game.outfits = { [2] = "Raid", [3] = "Town" }
+                    game.bar[26] = { type = "outfit", id = 2 }
+                    game.bar[27] = { type = "outfit", id = 3 }
+                    game:slash("save test")
+
+                    game:clearBar()
+                    game:slash("restore test")
+
+                    assert.are.same({ type = "outfit", id = 2 }, game.bar[26])
+                    assert.are.same({ type = "outfit", id = 3 }, game.bar[27])
+                    assert.are.same({ "Saved set 'test'!", "Restored set 'test'" }, game:messages())
+                end)
+            end
+
             it("saves macros by name, so they survive being reordered", function()
                 game.bar[1] = { type = "macro", id = 1 }
                 game:slash("save test")
