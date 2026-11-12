@@ -276,14 +276,15 @@ end
 --   game:slash("save mySet")   run /abs with the given input
 --   game.bar[slot]             what's on the action bar
 --   game.output                lines the addon printed, without color codes
-function wow.load(client)
+-- savedDb, if given, is the addon's saved variables from an earlier session.
+function wow.load(client, savedDb)
     if type(client) == "string" then client = wow.client(client) end
 
     local game = {
         client = client,
         output = {},
         slashCommands = {},
-        savedVariables = {},
+        savedVariables = { [ADDON_NAME] = savedDb },
     }
 
     local env = FakeGameApis(game, client)

@@ -17,6 +17,21 @@ local cursorType = {
     summonmount = "mount",
 }
 
+-- Alias groups are kept per action type. Players name the type, and mounts
+-- show on the action bar as "summonmount".
+local aliasTypes = {
+    spell = "spell",
+    item = "item",
+    mount = "summonmount",
+}
+local aliasTypeNames = { spell = "spell", item = "item", summonmount = "mount" }
+
+local function FindAliasGroup(self, actionType, id)
+    for label, ids in pairs(self.db.class.aliasGroups[actionType] or {}) do
+        if Array.contains(ids, id) then return label, ids end
+    end
+end
+
 local function RestoreActionButton(self, index, actionButton)
     -- Clear the slot
     if GetActionInfo(index) then
@@ -30,8 +45,11 @@ local function RestoreActionButton(self, index, actionButton)
     local pickup = pickupActionButton[actionButton.type]
     if not pickup then return false end
 
-    local aliases = self.db.class.spellAliases[actionButton.id] or {}
-    local ids = Array.insert(aliases, actionButton.id, 1)
+    local ids = { actionButton.id }
+    local _, group = FindAliasGroup(self, actionButton.type, actionButton.id)
+    for _, id in ipairs(group or {}) do
+        if id ~= actionButton.id then table.insert(ids, id) end
+    end
 
     for _, id in ipairs(ids) do
         pickup(id)
@@ -143,7 +161,9 @@ function Actions:RestoreSet(setName)
         if not succeeded then
             table.insert(messages, string.format("Error: Unable to restore %s with id [%s] to slot %d", set[i].type, set[i].id or "?", i))
         elseif actionButton and restoredID ~= actionButton.id then
-            table.insert(messages, string.format("Info: Restored spell %d (%s) in place of spell %d", restoredID, Compat.GetSpellName(restoredID), actionButton.id))
+            local typeName = aliasTypeNames[actionButton.type]
+            local name = actionButton.type == "spell" and string.format(" (%s)", Compat.GetSpellName(restoredID)) or ""
+            table.insert(messages, string.format("Info: Restored %s %d%s in place of %s %d", typeName, restoredID, name, typeName, actionButton.id))
         end
     end
 
@@ -175,63 +195,134 @@ function Actions:ListSets()
     self:Print(not Str.nullOrEmpty(setsStr) and setsStr or "No sets found")
 end
 
-function Actions:AliasSpell(args)
-    if Str.nullOrEmpty(args) then
-        self:Print("Must provide args in the format 'spellID aliasID'")
-        return
-    end
-    local spellID, aliasID = string.match(args, "(%d+)%s+(%d+)")
+local ALIAS_USAGE = "/abs alias <spell|item|mount> <group> <id> [id...] - e.g. /abs alias spell racials 20554 20549"
+local UNALIAS_USAGE = "/abs unalias <spell|item|mount> <group> [id...] - e.g. /abs unalias spell racials 20549"
 
-    spellID = tonumber(spellID)
-    aliasID = tonumber(aliasID)
+-- Splits "<type> <group> [id...]". Returns nothing after printing usage if the args don't fit.
+local function ParseAliasArgs(self, args, usage, idsRequired)
+    local words = {}
+    for word in string.gmatch(args or "", "%S+") do table.insert(words, word) end
 
-    if not (spellID and aliasID) then
-        self:Print(string.format("Could not parse spellID and aliasID from '%s'", args))
-        return
-    end
-
-    local aliases = self.db.class.spellAliases[spellID] or {}
-
-    if Array.contains(aliases, aliasID) then
-        self:Print(string.format("Spell %d is already aliased by %d", spellID, aliasID))
+    local typeName = Str.toLower(words[1])
+    local actionType = aliasTypes[typeName]
+    if not actionType then
+        self:Print(Str.nullOrEmpty(words[1]) and "Must provide a type: spell, item or mount"
+            or string.format("Unknown type '%s'. Must be spell, item or mount", words[1]))
+        self:Print(usage)
         return
     end
 
-    table.insert(aliases, aliasID)
-    self.db.class.spellAliases[spellID] = aliases
+    local label = Str.toLower(words[2])
+    if Str.nullOrEmpty(label) then
+        self:Print("Must provide a group name")
+        self:Print(usage)
+        return
+    end
 
-    self:Print(string.format("Added %d as an alias for %d", aliasID, spellID))
+    local ids = {}
+    for i = 3, #words do
+        local id = tonumber(words[i])
+        if not id then
+            self:Print(string.format("'%s' is not an ID. IDs must be numbers", words[i]))
+            self:Print(usage)
+            return
+        end
+        table.insert(ids, id)
+    end
+
+    if idsRequired and #ids == 0 then
+        self:Print("Must provide at least one ID")
+        self:Print(usage)
+        return
+    end
+
+    return actionType, typeName, label, ids
 end
 
-function Actions:DeleteSpellAliases(spellID)
-    if Str.nullOrEmpty(spellID) then
-        self:Print("Must provide a valid spellID")
+function Actions:Alias(args)
+    local actionType, typeName, label, ids = ParseAliasArgs(self, args, ALIAS_USAGE, true)
+    if not actionType then return end
+
+    local groups = self.db.class.aliasGroups
+    groups[actionType] = groups[actionType] or {}
+    local group = groups[actionType][label] or {}
+
+    for _, id in ipairs(ids) do
+        local otherLabel = FindAliasGroup(self, actionType, id)
+
+        if otherLabel == label or Array.contains(group, id) then
+            self:Print(string.format("'%s' already has %s %d", label, typeName, id))
+        elseif otherLabel then
+            self:Print(string.format("Can't add %s %d to '%s': it's already in '%s'", typeName, id, label, otherLabel))
+        else
+            table.insert(group, id)
+            self:Print(string.format("Added %s %d to '%s'", typeName, id, label))
+        end
+    end
+
+    if #group > 0 then groups[actionType][label] = group end
+end
+
+function Actions:Unalias(args)
+    local actionType, typeName, label, ids = ParseAliasArgs(self, args, UNALIAS_USAGE, false)
+    if not actionType then return end
+
+    local groups = self.db.class.aliasGroups[actionType] or {}
+    local group = groups[label]
+
+    if not group then
+        self:Print(string.format("No %s group named '%s'", typeName, label))
         return
     end
 
-    spellID = tonumber(spellID)
-
-    if not self.db.class.spellAliases[spellID] then
-        self:Print(string.format("No aliases to remove for spell with ID %d", spellID))
+    if #ids == 0 then
+        groups[label] = nil
+        self:Print(string.format("Deleted %s group '%s'", typeName, label))
         return
     end
 
-    self.db.class.spellAliases[spellID] = nil
+    for _, id in ipairs(ids) do
+        local found = false
+        for i, v in ipairs(group) do
+            if v == id then
+                table.remove(group, i)
+                found = true
+                break
+            end
+        end
 
-    self:Print(string.format("Removed all aliases for spell with ID %d", spellID))
+        if found then
+            self:Print(string.format("Removed %s %d from '%s'", typeName, id, label))
+        else
+            self:Print(string.format("'%s' doesn't have %s %d", label, typeName, id))
+        end
+    end
+
+    if #group == 0 then
+        groups[label] = nil
+        self:Print(string.format("Group '%s' is now empty and was deleted", label))
+    end
 end
 
 function Actions:ListAliases()
-    local aliases = self.db.class.spellAliases
+    local found = false
 
-    if Dict.isEmpty(aliases) then
-        self:Print("No aliases found")
-        return
+    for _, typeName in ipairs({ "spell", "item", "mount" }) do
+        local groups = self.db.class.aliasGroups[aliasTypes[typeName]] or {}
+        local labels = Dict.keysAsArray(groups)
+        table.sort(labels)
+
+        for _, label in ipairs(labels) do
+            local entries = Array.map(groups[label], function(id)
+                local name = typeName == "spell" and Compat.GetSpellName(id)
+                return name and string.format("%d (%s)", id, name) or tostring(id)
+            end)
+            self:Print(string.format("%s '%s': %s", typeName, label, table.concat(entries, ", ")))
+            found = true
+        end
     end
 
-    Dict.iter(self.db.class.spellAliases, function(spellID, spellAliases)
-        self:Print(string.format("Spell %d is aliased by: %s", spellID, table.concat(spellAliases, ", ")))
-    end)
+    if not found then self:Print("No alias groups found") end
 end
 
 function Actions:PrintUsage()
@@ -240,7 +331,7 @@ function Actions:PrintUsage()
     self:Print("/abs restore <set> - Restores the saved <set>")
     self:Print("/abs delete <set> - Deletes the saved <set>")
     self:Print("/abs list - Lists all saved sets")
-    self:Print("/abs alias <spellID> <aliasID> - Adds an alias with <aliasID> to <spellID>")
-    self:Print("/abs unalias <spellID> - Removes all aliases associated with <spellID>")
-    self:Print("/abs aliases - List all spell aliases")
+    self:Print("/abs alias <spell|item|mount> <group> <id> [id...] - Adds IDs to an alias group")
+    self:Print("/abs unalias <spell|item|mount> <group> [id...] - Removes IDs from a group, or the whole group")
+    self:Print("/abs aliases - Lists all alias groups")
 end

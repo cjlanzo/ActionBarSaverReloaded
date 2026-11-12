@@ -3,18 +3,21 @@ local ABS = _G.LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceConsole-3.0")
 function ABS:OnInitialize()
     self.db = _G.LibStub("AceDB-3.0"):New(ADDON_NAME, {
         class = {
-            spellAliases = {},
+            aliasGroups = {},
             sets = {},
         }
     })
+    -- Replaced by aliasGroups; players set their aliases up again
+    self.db.class.spellAliases = nil
+
     self.actions = ABS:GetModule("Actions")
     self.commands = {
         save    = self.actions.SaveSet,
         restore = self.actions.RestoreSet,
         delete  = self.actions.DeleteSet,
         list    = self.actions.ListSets,
-        alias   = self.actions.AliasSpell,
-        unalias = self.actions.DeleteSpellAliases,
+        alias   = self.actions.Alias,
+        unalias = self.actions.Unalias,
         aliases = self.actions.ListAliases,
     }
 
