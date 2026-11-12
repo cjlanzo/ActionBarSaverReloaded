@@ -329,6 +329,113 @@ function Actions:ListAliases()
     if not found then self:Print("No alias groups found") end
 end
 
+local function PlayerClass()
+    local _, class = UnitClass("player")
+    return class
+end
+
+local function CountAliasGroups(aliasGroups)
+    local count = 0
+    for _, groups in pairs(aliasGroups) do
+        for _ in pairs(groups) do count = count + 1 end
+    end
+    return count
+end
+
+-- An imported alias string has to follow the same rules as /abs alias
+local function ValidateAliasGroups(aliasGroups)
+    for actionType, groups in pairs(aliasGroups) do
+        if not aliasTypeNames[actionType] then
+            return string.format("Unknown alias type '%s'", tostring(actionType))
+        end
+
+        local seen = {}
+        local labels = Dict.keysAsArray(groups)
+        table.sort(labels)
+
+        for _, label in ipairs(labels) do
+            for _, id in ipairs(groups[label]) do
+                if type(id) ~= "number" then
+                    return string.format("'%s' in group '%s' is not an ID", tostring(id), label)
+                end
+                if seen[id] then
+                    return string.format("%s %d is in both '%s' and '%s'", aliasTypeNames[actionType], id, seen[id], label)
+                end
+                seen[id] = label
+            end
+        end
+    end
+end
+
+function Actions:Export(args)
+    if Str.toLower(args) == "aliases" then
+        if CountAliasGroups(self.db.global.aliasGroups) == 0 then
+            self:Print("No alias groups to export")
+            return
+        end
+
+        ns.Window.ShowExport("Export alias groups", ns.Transfer.EncodeAliases(self.db.global.aliasGroups))
+        return
+    end
+
+    if Str.nullOrEmpty(args) then
+        self:Print("Usage: /abs export <set> or /abs export aliases")
+        return
+    end
+
+    local set = self.db.class.sets[args]
+    if not set then
+        self:Print(string.format("No set with the name '%s' exists", args))
+        return
+    end
+
+    ns.Window.ShowExport(string.format("Export set '%s'", args), ns.Transfer.EncodeSet(args, PlayerClass(), set))
+end
+
+-- Imports text from the import window. Returns "done", "conflict" or "error",
+-- and a message. Nothing is overwritten unless replace is true.
+function Actions:ImportText(text, setName, replace)
+    local data, err = ns.Transfer.Decode(text)
+    if not data then return "error", err end
+
+    if data.kind == "aliases" then
+        local invalid = ValidateAliasGroups(data.aliasGroups)
+        if invalid then return "error", invalid end
+
+        local existing = CountAliasGroups(self.db.global.aliasGroups)
+        if existing > 0 and not replace then
+            return "conflict", string.format("This replaces your %d alias group(s).", existing)
+        end
+
+        self.db.global.aliasGroups = data.aliasGroups
+        local message = string.format("Imported %d alias group(s)", CountAliasGroups(data.aliasGroups))
+        self:Print(message)
+        return "done", message
+    end
+
+    local class = PlayerClass()
+    if data.class ~= class then
+        return "error", string.format("This set is for a %s; you're on a %s", data.class, class)
+    end
+
+    local name = Str.nullOrEmpty(setName) and data.name or setName
+    if self.db.class.sets[name] and not replace then
+        return "conflict", string.format("Set '%s' already exists.", name)
+    end
+
+    local verb = self.db.class.sets[name] and "Replaced" or "Imported"
+    self.db.class.sets[name] = data.set
+    local message = string.format("%s set '%s'", verb, name)
+    self:Print(message)
+    return "done", message
+end
+
+function Actions:Import(setName)
+    ns.Window.ShowImport("Import a set or alias groups", function(text, replace)
+        return Actions.ImportText(self, text, setName, replace)
+    end)
+end
+
 function Actions:PrintUsage()
     self:Print("ABS Slash commands")
     self:Print("/abs save <set> - Saves your current action bar setup under the given <set>")
@@ -338,4 +445,7 @@ function Actions:PrintUsage()
     self:Print("/abs alias <spell|item|mount> <group> <id> [id...] - Adds IDs to an alias group")
     self:Print("/abs unalias <spell|item|mount> <group> [id...] - Removes IDs from a group, or the whole group")
     self:Print("/abs aliases - Lists all alias groups")
+    self:Print("/abs export <set> - Shows the <set> as text to copy to another account")
+    self:Print("/abs export aliases - Shows your alias groups as text to copy to another account")
+    self:Print("/abs import [set] - Imports a set or alias groups. Give <set> to save under a different name")
 end

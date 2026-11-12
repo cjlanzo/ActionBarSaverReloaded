@@ -12,5 +12,7 @@ constants.lua
 Compat.lua
 StringHelpers.lua
 TableHelpers.lua
+Transfer.lua
+Window.lua
 Main.lua
 Actions.lua

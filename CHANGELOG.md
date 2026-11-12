@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
+## 2.1.0
 
+- Copy sets and alias groups to another account with `/abs export` and `/abs import`, without copying your WTF folder.
 - Aliases are now named groups, and work in both directions: `/abs alias spell racials 20554 20549`. Groups can hold items and mounts too, and are shared by every character on your account. Your old aliases have been removed, so set them up again with the new command. Type `/abs` to see all the alias commands.
 
 ## 2.0.2

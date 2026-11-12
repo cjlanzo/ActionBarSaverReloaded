@@ -15,7 +15,8 @@ read_globals = {
     "LibStub",
     "ClearCursor", "GetActionInfo", "GetActionText", "GetCursorInfo", "GetMacroInfo", "InCombatLockdown",
     "PickupAction", "PickupItem", "PickupMacro", "PickupSpell", "PlaceAction",
-    "GetSpellInfo",
+    "GetSpellInfo", "UnitClass",
+    "ACCEPT",
     "C_EquipmentSet", "C_Item", "C_MountJournal", "C_TransmogOutfitInfo", "C_Spell",
     string = { fields = { "split" } },
 }
