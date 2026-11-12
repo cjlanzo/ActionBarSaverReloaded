@@ -17,7 +17,7 @@ Clients differ in which WoW APIs they have. All of those differences live in `sr
 - `src/`: the addon. Files load in the order the `.toc` lists them.
   - `Main.lua` registers the addon, its saved variables and the `/abs` command.
   - `Actions.lua` implements the commands. Commands run with `self` set to the addon, not the module.
-  - Sets and aliases are saved per class in `db.class.sets` and `db.class.spellAliases`.
+  - Sets are saved per class in `db.class.sets`. Alias groups are account-wide, in `db.global.aliasGroups[type][label]`.
 - Ace3 isn't in the repo. The packager downloads the libraries `Embeds.xml` loads into `Libs/` at build time (`externals` in `.pkgmeta`). To use another Ace3 library, add it to both.
 - `spec/`: busted tests. `spec/helpers/wow.lua` is a fake WoW client.
 - `build.cmd`: Windows-only script. It builds with the packager and copies the result into a local WoW install for testing. It needs `bash` on the PATH.

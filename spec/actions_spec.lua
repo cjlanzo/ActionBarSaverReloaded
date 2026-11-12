@@ -15,7 +15,6 @@ for _, client in ipairs(wow.clients) do
         end)
 
         local function sets() return game.db.class.sets end
-        local function aliases() return game.db.class.spellAliases end
 
         describe("save and restore", function()
             it("restores spells, items, macros and equipment sets to their slots", function()
@@ -191,48 +190,186 @@ for _, client in ipairs(wow.clients) do
             end)
         end)
 
-        describe("spell aliases", function()
-            it("restores an alias when the saved spell isn't known", function()
-                -- e.g. a racial that has a different ID on another class
+        describe("alias groups", function()
+            local function groups() return game.db.global.aliasGroups end
+
+            it("restores another spell in the group, whichever one was saved", function()
+                -- Troll and tauren racials: neither character can have the other's
+                game:slash("alias spell racials 20554 20549")
+
                 game.spells[20554] = "Berserking"
                 game.bar[1] = { type = "spell", id = 20554 }
-                game:slash("save test")
-                game:slash("alias 20554 20549")
-
+                game:slash("save troll")
                 game.spells[20554] = nil
+                game.bar[1] = { type = "spell", id = 20549 }
+                game:slash("save tauren")
+
+                game:clearBar()
+                game:clearOutput()
+                game:slash("restore troll")
+                assert.are.same({ type = "spell", id = 20549 }, game.bar[1])
+
+                game.spells[20554] = "Berserking"
+                game.spells[20549] = nil
+                game:clearBar()
+                game:slash("restore tauren")
+                assert.are.same({ type = "spell", id = 20554 }, game.bar[1])
+
+                assert.are.same({
+                    "Restored set 'troll'",
+                    "Info: Restored spell 20549 (War Stomp) in place of spell 20554",
+                    "Restored set 'tauren'",
+                    "Info: Restored spell 20554 (Berserking) in place of spell 20549",
+                }, game:messages())
+            end)
+
+            it("says the group was tried when nothing in it can be restored", function()
+                game:slash("alias spell racials 20554 7744")
+                game.bar[1] = { type = "spell", id = 20554 }
+                game:slash("save test")
+
                 game:clearBar()
                 game:clearOutput()
                 game:slash("restore test")
 
-                assert.are.same({ type = "spell", id = 20549 }, game.bar[1])
+                assert.is_nil(game.bar[1])
                 assert.are.same({
                     "Restored set 'test'",
-                    "Info: Restored spell 20549 (War Stomp) in place of spell 20554",
+                    "Error: Unable to restore spell 20554 or anything in its group 'racials' to slot 1",
                 }, game:messages())
             end)
 
-            it("adds, lists and removes aliases", function()
-                game:slash("alias 20554 20549")
-                game:slash("alias 20554 20549")
-                game:slash("aliases")
-                game:slash("unalias 20554")
-                game:slash("aliases")
+            it("restores items from an item group", function()
+                game:slash("alias item hearth 6948 2")
+                game.bar[1] = { type = "item", id = 2 }
+                game:slash("save test")
 
-                assert.are.same({}, aliases())
+                game:clearBar()
+                game:clearOutput()
+                game:slash("restore test")
+
+                assert.are.same({ type = "item", id = 6948 }, game.bar[1])
                 assert.are.same({
-                    "Added 20549 as an alias for 20554",
-                    "Spell 20554 is already aliased by 20549",
-                    "Spell 20554 is aliased by: 20549",
-                    "Removed all aliases for spell with ID 20554",
-                    "No aliases found",
+                    "Restored set 'test'",
+                    "Info: Restored item 6948 in place of item 2",
                 }, game:messages())
             end)
 
-            it("rejects alias arguments that aren't two spell IDs", function()
-                game:slash("alias charge stomp")
+            it("only uses groups of the saved action's type", function()
+                -- Item 20554 isn't spell 20554
+                game:slash("alias spell racials 20554 20549")
+                game.items[20554] = "Some Item"
+                game.bar[1] = { type = "item", id = 20554 }
+                game:slash("save test")
 
-                assert.are.same({}, aliases())
-                assert.are.same({ "Could not parse spellID and aliasID from 'charge stomp'" }, game:messages())
+                game.items[20554] = nil
+                game:clearBar()
+                game:clearOutput()
+                game:slash("restore test")
+
+                assert.is_nil(game.bar[1])
+                assert.are.same({
+                    "Restored set 'test'",
+                    "Error: Unable to restore item with id [20554] to slot 1",
+                }, game:messages())
+            end)
+
+            if client.mountJournal then
+                it("restores mounts from a mount group", function()
+                    game:slash("alias mount wolves 1 2")
+                    game.mounts = { 2 }
+                    game.bar[1] = { type = "summonmount", id = 1 }
+                    game:slash("save test")
+
+                    game:clearBar()
+                    game:slash("restore test")
+
+                    assert.are.same({ type = "summonmount", id = 2 }, game.bar[1])
+                    assert.are.same({ wolves = { 1, 2 } }, groups().summonmount)
+                end)
+            end
+
+            it("adds to a group by name and lists groups by type", function()
+                game:slash("alias spell Racials 20554 20549")
+                game:slash("alias spell racials 7744 20549")
+                game:slash("alias item hearth 6948")
+                game:clearOutput()
+                game:slash("aliases")
+
+                assert.are.same({ racials = { 20554, 20549, 7744 } }, groups().spell)
+                assert.are.same({
+                    "spell 'racials': 20554, 20549 (War Stomp), 7744",
+                    "item 'hearth': 6948",
+                }, game:messages())
+            end)
+
+            it("keeps an ID in only one group per type", function()
+                game:slash("alias spell racials 20554")
+                game:slash("alias spell other 20554 100")
+
+                assert.are.same({ racials = { 20554 }, other = { 100 } }, groups().spell)
+                assert.are.same({
+                    "Added spell 20554 to 'racials'",
+                    "Can't add spell 20554 to 'other': it's already in 'racials'",
+                    "Added spell 100 to 'other'",
+                }, game:messages())
+            end)
+
+            it("removes IDs, and deletes a group once it's empty", function()
+                game:slash("alias spell racials 20554 20549")
+                game:clearOutput()
+                game:slash("unalias spell racials 20549 7744")
+                game:slash("unalias spell racials 20554")
+                game:slash("aliases")
+
+                assert.is_nil(groups().spell.racials)
+                assert.are.same({
+                    "Removed spell 20549 from 'racials'",
+                    "'racials' doesn't have spell 7744",
+                    "Removed spell 20554 from 'racials'",
+                    "Group 'racials' is now empty and was deleted",
+                    "No alias groups found",
+                }, game:messages())
+            end)
+
+            it("deletes a whole group", function()
+                game:slash("alias spell racials 20554 20549")
+                game:clearOutput()
+                game:slash("unalias spell racials")
+                game:slash("unalias spell racials")
+
+                assert.is_nil(groups().spell.racials)
+                assert.are.same({
+                    "Deleted spell group 'racials'",
+                    "No spell group named 'racials'",
+                }, game:messages())
+            end)
+
+            it("prints usage when the type, group or IDs are missing or wrong", function()
+                local usage = "/abs alias <spell|item|mount> <group> <id> [id...] - e.g. /abs alias spell racials 20554 20549"
+                game:slash("alias")
+                game:slash("alias racials 20554")
+                game:slash("alias spell")
+                game:slash("alias spell racials")
+                game:slash("alias spell racials stomp")
+                game:slash("unalias racials")
+
+                assert.are.same({}, groups())
+                assert.are.same({
+                    "Must provide a type: spell, item or mount", usage,
+                    "Unknown type 'racials'. Must be spell, item or mount", usage,
+                    "Must provide a group name", usage,
+                    "Must provide at least one ID", usage,
+                    "'stomp' is not an ID. IDs must be numbers", usage,
+                    "Unknown type 'racials'. Must be spell, item or mount",
+                    "/abs unalias <spell|item|mount> <group> [id...] - e.g. /abs unalias spell racials 20549",
+                }, game:messages())
+            end)
+
+            it("drops aliases saved in the old format", function()
+                game = wow.load(client, { class = { spellAliases = { [20554] = { 20549 } } } })
+
+                assert.is_nil(game.db.class.spellAliases)
             end)
         end)
 

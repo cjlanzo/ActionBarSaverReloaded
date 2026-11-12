@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Aliases are now named groups, and work in both directions: `/abs alias spell racials 20554 20549`. Groups can hold items and mounts too, and are shared by every character on your account. Your old aliases have been removed, so set them up again with the new command. Type `/abs` to see all the alias commands.
+
 ## 2.0.2
 
 - Transmog outfits on your action bars now restore on Forever.
