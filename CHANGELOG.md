@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- `/absr` now works as well as `/abs`. On French clients, `/abs` is the game's `/afk` command, so use `/absr` there.
+
 ## 2.1.0
 
 - Copy sets and alias groups to another account with `/abs export` and `/abs import`, without copying your WTF folder.

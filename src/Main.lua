@@ -28,6 +28,8 @@ function ABS:OnInitialize()
     }
 
     self:RegisterChatCommand("abs", "HandleCommands")
+    -- French clients claim /abs for /afk
+    self:RegisterChatCommand("absr", "HandleCommands")
 end
 
 function ABS:HandleCommands(input)

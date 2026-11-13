@@ -23,6 +23,9 @@ wow.clients = {
         -- Mounts are a collection, not items or companion spells
         mountJournal = true,
         transmogOutfits = true,
+        -- Spells that change with form or talents report their own ID on the
+        -- bar, but only the spellbook spell they replace can be picked up
+        baseSpells = true,
     },
     {
         name = "TBC Anniversary",
@@ -31,6 +34,7 @@ wow.clients = {
     {
         name = "Wrath/Cata/Mists",
         maxSlots = 132,
+        baseSpells = true,
     },
     {
         name = "Era",
@@ -118,6 +122,7 @@ local function FakeGameApis(game, client)
 
     -- Things the cursor can hold, keyed by type then ID
     game.spells = {}         -- [spellID] = name, for spells the character knows
+    game.baseSpells = {}     -- [spellID] = the spellbook spell it replaces (baseSpells clients)
     game.items = {}          -- [itemID] = name, for items the character has
     game.macros = {}         -- [index] = name
     game.macroContents = {}  -- [index] = { type = "spell" or "item", id = ID } for what a macro shows
@@ -262,6 +267,10 @@ local function FakeGameApis(game, client)
             local name = getSpellName(spellID)
             if name then return name, nil, 136243 end
         end
+    end
+
+    if client.baseSpells then
+        api.FindBaseSpellByID = function(spellID) return game.baseSpells[spellID] or spellID end
     end
 
     return api

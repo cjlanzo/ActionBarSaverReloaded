@@ -14,6 +14,8 @@ To copy a set to another account, run `/abs export <set>` and copy the text it s
 
 ## Usage
 
+Every command also works as `/absr`. Use it on clients where `/abs` is taken, such as French, where `/abs` means `/afk`.
+
 `/abs save <set>` - Saves your current action bar setup under the given <set>\
 `/abs restore <set>` - Restores the saved <set>\
 `/abs delete <set>` - Deletes the saved <set>\
