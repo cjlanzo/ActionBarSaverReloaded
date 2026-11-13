@@ -7,7 +7,20 @@ local _, ns = ...
 local Compat = {}
 ns.Compat = Compat
 
-Compat.PickupSpell = (C_Spell and C_Spell.PickupSpell) or PickupSpell
+local PickupSpell = (C_Spell and C_Spell.PickupSpell) or PickupSpell
+local GetBaseSpell = (C_Spell and C_Spell.GetBaseSpell) or FindBaseSpellByID
+
+-- Some spells change with form or talents, e.g. Feral Charge becomes Feral
+-- Charge - Bear in bear form. The bar reports the changed spell, which isn't
+-- in the spellbook, so fall back to the spellbook spell it came from.
+function Compat.PickupSpell(spellID)
+    PickupSpell(spellID)
+    if GetCursorInfo() or not GetBaseSpell then return end
+
+    local baseID = GetBaseSpell(spellID)
+    if baseID and baseID ~= spellID then PickupSpell(baseID) end
+end
+
 Compat.PickupItem = (C_Item and C_Item.PickupItem) or PickupItem
 Compat.PickupMacro = PickupMacro
 

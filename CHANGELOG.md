@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.0
+
+- `/absr` now works as well as `/abs`. On French clients, `/abs` is the game's `/afk` command, so use `/absr` there.
+- Spells that change with your form, such as Feral Charge in cat or bear form, now restore on Cata and Mists.
+
 ## 2.1.0
 
 - Copy sets and alias groups to another account with `/abs export` and `/abs import`, without copying your WTF folder.

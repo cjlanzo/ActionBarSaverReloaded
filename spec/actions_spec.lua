@@ -16,6 +16,14 @@ for _, client in ipairs(wow.clients) do
 
         local function sets() return game.db.class.sets end
 
+        it("also answers to /absr, since French clients use /abs for /afk", function()
+            game.bar[1] = { type = "spell", id = 100 }
+
+            game.slashCommands.absr("save test")
+
+            assert.are.same({ "Saved set 'test'!" }, game:messages())
+        end)
+
         describe("save and restore", function()
             it("restores spells, items, macros and equipment sets to their slots", function()
                 game.bar[1] = { type = "spell", id = 100 }
@@ -68,6 +76,23 @@ for _, client in ipairs(wow.clients) do
 
                     assert.are.same({ type = "outfit", id = 2 }, game.bar[26])
                     assert.are.same({ type = "outfit", id = 3 }, game.bar[27])
+                    assert.are.same({ "Saved set 'test'!", "Restored set 'test'" }, game:messages())
+                end)
+            end
+
+            if client.baseSpells then
+                it("restores a spell saved in its changed form from the spellbook spell", function()
+                    -- Feral Charge (49377) shows as Feral Charge - Bear (16979) in bear form
+                    game.spells[49377] = "Feral Charge"
+                    game.baseSpells[16979] = 49377
+                    game.bar[97] = { type = "spell", id = 16979 }
+                    game:slash("save test")
+
+                    game:clearBar()
+                    game:slash("restore test")
+
+                    assert.are.same({ type = "spell", id = 49377 }, game.bar[97])
+                    assert.is_nil(game.cursor)
                     assert.are.same({ "Saved set 'test'!", "Restored set 'test'" }, game:messages())
                 end)
             end
